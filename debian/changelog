@@ -1,0 +1,55 @@
+apt-metalink (0.8) unstable; urgency=medium
+
+  * exit with error when download is not successful
+    or the user refuses to perform the download
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Thu, 26 Jan 2017 09:38:36 +0100
+
+apt-metalink (0.7) unstable; urgency=medium
+
+  * unify options and commands with apt-get
+  * add command full-upgrade, equivalent to dist-upgrade
+  * create a bash completion, borrowed some code from apt-get
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Mon, 07 Nov 2016 11:56:13 +0100
+
+apt-metalink (0.6) unstable; urgency=medium
+
+  * process changes only when some packages have changed
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Mon, 28 Dec 2015 09:07:28 +0100
+
+apt-metalink (0.5) unstable; urgency=medium
+
+  * Suppress output of blank lines when downloading packages
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Thu, 12 Nov 2015 09:08:54 +0100
+
+apt-metalink (0.4) unstable; urgency=medium
+
+  * /etc/apt/apt-metalink.conf file:
+    original URI is a regular expression
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Sat, 11 Jul 2015 09:09:37 +0200
+
+apt-metalink (0.3) unstable; urgency=medium
+
+  * recover release files newer than actual
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Mon, 06 Jul 2015 19:52:47 +0200
+
+apt-metalink (0.2) unstable; urgency=medium
+
+  * option "--yes" to dist-upgrade
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Wed, 20 May 2015 08:03:58 +0200
+
+apt-metalink (0.1) unstable; urgency=low
+
+  * Forked an initial development of Tatsuhiro Tsujikawa
+   - /etc/apt/apt-metalink.conf lists alternative servers to connect at the
+     same time that the servers specified in sources.list
+  * Packaging for Debian
+  * easy support of multiple download sources for upgrade and install,
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Sat, 31 Oct 2009 00:00:00 +0200

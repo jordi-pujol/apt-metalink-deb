@@ -1,12 +1,5 @@
-# apt-metalink-deb
-
 This package contains a Debian apt program that downloads package files 
 from HTTP repositories using the download utility Aria2.
-
-This work is based on the apt-metalink utility from:
-https://github.com/tatsuhiro-t/apt-metalink
-
-It is enhanced in some points, the configuration is more easy, some bugs are solved and all that is included in a Debian package to easy install.
 
 For an overview of the Aria2 utility, see the 'aria2' package, or
 go to the homepage: http://aria2.sourceforge.net/

@@ -1,0 +1,190 @@
+<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+
+  <!-- Fill in your name for FIRSTNAME and SURNAME. -->
+  <!ENTITY dhfirstname "<firstname>Jordi</firstname>">
+  <!ENTITY dhsurname   "<surname>Pujol</surname>">
+  <!-- Please adjust the date whenever revising the manpage. -->
+  <!ENTITY dhdate      "<date>November 6, 2009</date>">
+  <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
+       allowed: see man(7), man(1). -->
+  <!ENTITY dhsection   "<manvolnum>8</manvolnum>">
+  <!ENTITY dhemail     "<email>jordipujolp@gmail.com</email>">
+  <!ENTITY dhusername  "Jordi Pujol">
+  <!ENTITY dhucpackage "<refentrytitle>apt-metalink</refentrytitle>">
+  <!ENTITY dhpackage   "apt-metalink">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+<refentryinfo>
+	<address>
+		&dhemail;
+	</address>
+	<author>
+		&dhfirstname;
+		&dhsurname;
+	</author>
+	<copyright>
+		<year>2006</year>
+		<holder>&dhusername;</holder>
+	</copyright>
+	&dhdate;
+</refentryinfo>
+<refmeta>
+	&dhucpackage;
+
+	&dhsection;
+</refmeta>
+
+<refnamediv>
+	<refname>&dhpackage;</refname>
+
+	<refpurpose>a program to download Debian packages using Aria2</refpurpose>
+</refnamediv>
+<refsect1>
+	<title>SYNOPSIS</title>
+
+	<para>apt-metalink [options] {help | upgrade | dist-upgrade | install pkg ...}</para>
+</refsect1>
+<refsect1>
+	<title>DESCRIPTION</title>
+
+	<para>The apt-metalink package contains the apt-metalink program, 
+	that downloads package files from HTTP repositories using the 
+	download utility Aria2.</para>
+  
+	<para>This manual page documents briefly the options available to 
+	the apt-metalink program. </para>
+
+	<para>Using this method has some advantages over apt downloading 
+	via HTTP. Unlike the traditional apt-get, this program will 
+	download simultaneously from multiple servers. Each download is 
+	done from a set of mirrors, and the job will be completed even if 
+	one of them is not responding or unavailable. </para>
+
+	<variablelist>
+	<varlistentry><term><option>help</option></term>
+		<listitem><para>writes a short text about commands and options
+		and their description.</para></listitem>
+	</varlistentry>
+
+	<varlistentry><term><option>upgrade</option></term>
+		<listitem><para>is used to install the newest versions of all 
+		packages currently installed on the system.</para></listitem>
+	</varlistentry>
+
+	<varlistentry><term><option>dist-upgrade/full-upgrade</option></term>
+	<listitem><para>in addition to performing the function of 
+	<literal>upgrade</literal>, also intelligently handles changing dependencies 
+	with new versions of packages.</para></listitem>
+	</varlistentry>
+
+	<varlistentry><term><option>install</option></term>
+		<listitem><para>is followed by one or more 
+			packages desired for installation or upgrading.</para>
+		</listitem>
+	</varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1>
+	<title>OPTIONS</title>
+	<variablelist>
+		<varlistentry><term><option>-h, --help</option></term>
+		<listitem><para>show this help message and exit.</para></listitem>
+		</varlistentry>
+
+		<varlistentry><term><option>-d, --download-only</option></term>
+		<listitem><para>Download only; package files are only retrieved, not unpacked or installed.
+		Configuration Item: <literal>APT::Get::Download-Only</literal>.</para></listitem>
+		</varlistentry>
+
+		<varlistentry><term><option>-y, --assume-yes</option></term>
+		<listitem><para>Automatic yes to prompts; assume "yes" as answer to all prompts and run
+		non-interactively.
+		Configuration Item: <literal>APT::Get::Assume-Yes</literal>.</para></listitem>
+		</varlistentry>
+
+		<varlistentry><term><option>-m, --metalink-out</option> file</term>
+		<listitem><para>Instead of fetching the files to install the Metalink XML document
+		is written to a file. Metalink XML document contains package'sURIs and checksums.
+		.</para></listitem>
+		</varlistentry>
+
+		<varlistentry><term><option>-c, --hash-check</option></term>
+		<listitem><para>Check hash of already downloaded files. If hash check
+		fails, download file again.</para></listitem>
+		</varlistentry>
+
+		<varlistentry><term><option>-x, --aria2c</option> /path/to/aria2c</term>
+		<listitem><para>path to aria2c executable [default: /usr/bin/aria2c].</para></listitem>
+		</varlistentry>
+
+	</variablelist>
+</refsect1>
+
+<refsect1><title>CONFIGURATION</title>
+
+	<para>To use <literal>apt-metalink</literal>, the file 
+	<literal>/etc/apt/apt-metalink.conf</literal> may be customized to 
+	point the most reliable servers on your zone.</para>
+
+	<para>This method is designed to use the HTTP protocol, and so the 
+	other mirrors configured in 
+	<literal>/etc/apt/apt-metalink.conf</literal> must use the HTTP 
+	protocol. We must configure the servers and a list of mirrors for each 
+	server.</para>
+
+	<para>If your original <literal>sources.list</literal> has a line like this:</para>
+
+	<para><literal>deb http://httpredir.debian.org/debian unstable main contrib non-free</literal></para>
+
+	<para>The corresponding lines in file <literal>/etc/apt/apt-metalink.conf</literal>
+	will have the following form:</para>
+
+	<para><literal>http://.*.debian.org/debian,http://ftp.at.debian.org/debian,5</literal></para>
+
+	<para>There are three fields separated by comma, first is a regex 
+	to match the original <literal>sources.list</literal> URL, the 
+	second is a corresponding alternative to this URL, third field is 
+	optional, is the priority number (1 to 10) to download from this 
+	alternative URL. Multiple lines of corresponding alternatives may 
+	be listed for a single original URL.</para>
+
+</refsect1>
+
+<refsect1>
+	<title>AUTHOR</title>
+	<para>This manual page was written by &dhusername; &lt;&dhemail;> for
+	the &debian; system (but may be used by others).  Permission is
+	granted to copy, distribute and/or modify this document under
+	the terms of the &gnu; General Public License, Version 2 or any
+	later version published by the Free Software Foundation.
+	</para>
+	<para>
+	On Debian systems, the complete text of the GNU General Public
+	License can be found in /usr/share/common-licenses/GPL.
+	</para>
+</refsect1>
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-omittag:t
+sgml-shorttag:t
+sgml-minimize-attributes:nil
+sgml-always-quote-attributes:t
+sgml-indent-step:2
+sgml-indent-data:t
+sgml-parent-document:nil
+sgml-default-dtd-file:nil
+sgml-exposed-tags:nil
+sgml-local-catalogs:nil
+sgml-local-ecat-files:nil
+End:
+-->

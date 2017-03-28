@@ -1,0 +1,27 @@
+Source: apt-metalink
+Section: admin
+Priority: optional
+Maintainer: Jordi Pujol Palomer <jordipujolp@gmail.com>
+Homepage: http://livenet.ddns.net/
+Standards-Version: 3.7.3
+Build-Depends: debhelper (>= 5.0), dh-python, python-apt, docbook-to-man
+
+Package: apt-metalink
+Architecture: all
+Depends: ${shlibs:Depends}, aria2, gzip, bzip2, xz-utils, python, python-apt
+Description: apt-get like utility to update Debian with apt-pkg and
+ aria2 downloader.
+ This package contains the apt-metalink utility.
+ Creates a batch metalink file and aria2 processes it.
+ It updates the package lists, upgrades the system and installs packages
+ establishing simultaneous connections to several distribution mirrors,
+ The goal of this method is download at the maximum bandwith available.
+ .
+ For an overview of the downloader utility, see the 'aria2' package.
+ .
+ Aria2 metalink has some advantages over HTTP. Unlike the
+ traditional HTTP method, a metalink batch will download simultaneously 
+ from multiple servers and get always the latest version of the files.
+ Each download is done from a set of mirrors, 
+ thus the job will be completed even if one of them is not responding 
+ or unavailable.
