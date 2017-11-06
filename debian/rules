@@ -4,21 +4,28 @@
 #export DH_VERBOSE=1
 
 BIN := $(notdir $(wildcard bin/*))
-PYTHON := $(notdir $(wildcard src/*))
+COMPLETIONS := $(notdir $(wildcard completions/*))
+SRC := $(notdir $(wildcard src/*))
+PY := $(shell which python2 || which python3)
 
 %:
-	dh ${@} --parallel  --with python2
+	dh ${@} --parallel
 
-override_dh_auto_test: $(BIN:%=bin-%) $(PYTHON:%=python-%)
+override_dh_auto_test: $(BIN:%=bin-%) $(COMPLETIONS:%=completions-%) $(SRC:%=src-%)
 
 bin-%:
 	$(info checking $* ...)
-	@bash -n bin/$*
+	@dash -n bin/$*
 	-@checkbashisms -f bin/$*
 
-python-%:
+completions-%:
 	$(info checking $* ...)
-	python -O -m py_compile src/$*
+	@bash -n completions/$*
+	-@checkbashisms -f completions/$*
+
+src-%:
+	$(info checking $* ...)
+	$(PY) -O -m py_compile src/$*
 
 override_dh_auto_build: apt-metalink.1
 
