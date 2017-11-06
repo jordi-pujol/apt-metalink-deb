@@ -1,3 +1,4 @@
-src/apt-metalink.py		usr/bin
-conf/apt-metalink.conf	etc/apt
-bin/apt-metalink	/usr/share/bash-completion/completions
+src/apt-metalink.py			usr/bin
+conf/apt-metalink.conf		etc/apt
+bin/apt-metalink			usr/bin
+completions/apt-metalink	usr/share/bash-completion/completions
