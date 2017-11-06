@@ -6,10 +6,14 @@ from HTTP repositories using the download utility Aria2.
 This work is based on the apt-metalink utility from:
 https://github.com/tatsuhiro-t/apt-metalink
 
-It is enhanced in some points, the configuration is more easy, some bugs are solved and all that is included in a Debian package to easy install.
+It is enhanced in some points, the configuration is more easy, some 
+bugs are solved, now works with any python version, and all that is 
+included in a Debian package to easy install.
 
 For an overview of the Aria2 utility, see the 'aria2' package, or
 go to the homepage: http://aria2.sourceforge.net/
+
+Download the Debian package and install it.
 
 Using apt-metalink has some advantages over apt-get. Unlike the 
 traditional apt-get, this program will download simultaneously from 
