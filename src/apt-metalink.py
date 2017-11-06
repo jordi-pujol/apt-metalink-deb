@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 # apt-metalink - Download deb packages from multiple servers concurrently
 # Copyright (C) 2010-2014 Tatsuhiro Tsujikawa
-# Copyright (C) 2014-2016 Jordi Pujol
+# Copyright (C) 2014-2017 Jordi Pujol
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -74,28 +74,31 @@ class AptMetalink:
 		if pkgs:
 			_print_update_summary(self.cache, pkgs)
 			if not self.opts.assume_yes:
-				sys.stdout.write("Do you want to continue [Y/n]?")
-				ans = sys.stdin.readline().strip()
+				if sys.version_info[0] < 3:
+					sys.stdout.write("Do you want to continue [Y/n]?")
+					ans = sys.stdin.readline().strip()
+				else:
+					ans = input('Do you want to continue [Y/n]?').strip()
 				if ans and ans.lower() != 'y':
-					print "Abort."
+					print("Abort.")
 					exit(1)
 			if self.cache.required_download > 0:
 				pkgs = [pkg for pkg in pkgs if not pkg.marked_delete and \
 							not self._file_downloaded(pkg, hash_check = \
-														  self.opts.hash_check)]
+								self.opts.hash_check)]
 				if self.opts.metalink_out:
-					with open(self.opts.metalink_out, 'wb') as f:
+					with open(self.opts.metalink_out, 'w') as f:
 						make_metalink(f, pkgs)
 					return
 				if not self._download(pkgs, num_concurrent=guess_concurrent(pkgs)):
-					print "Some download fails. apt_pkg will take care of them."
+					print("Some download fails. apt_pkg will take care of them.")
 					exit(1)
 			else:
-				print "There is nothing to download."
+				print("There is nothing to download.")
 			if self.opts.metalink_out:
 				return
 			if self.opts.download_only:
-				print "Download complete and in download only mode"
+				print("Download complete and in download only mode")
 				return
 			self.cache.commit(apt.progress.text.AcquireProgress())
 
@@ -131,13 +134,14 @@ class AptMetalink:
 		if ftp_proxy:
 			cmdline.append('='.join(['--ftp-proxy', ftp_proxy]))
 
-		print 'Download in progress...'
+		print('Download in progress...')
 		time_start = time.time()
 		proc = subprocess.Popen(cmdline,
 								stdin=subprocess.PIPE,
 								stdout=subprocess.PIPE,
 								stderr=subprocess.STDOUT,
-								env={"LANGUAGE": "en_US"})
+								env={"LANGUAGE": "en_US"},
+								universal_newlines=True)
 		make_metalink(proc.stdin, pkgs)
 		proc.stdin.close()
 		download_results = False
@@ -149,14 +153,14 @@ class AptMetalink:
 			if line.startswith('Download Results:'):
 				download_results = True
 			if download_results and not line == '':
-				print line.replace(partial_dir + "/", '')
+				print(line.replace(partial_dir + "/", ''))
 				if 'Download complete' in line:
 					break
-		print
+		print()
 		link_success = True
 		time_end = time.time()
-		print 'Elapsed time: {0}'.format(apt_pkg.time_to_str(int(time_end - time_start)))
-		print 'Overall speed: {0}B/s'.format(apt_pkg.size_to_str(self.cache.required_download / (time_end - time_start)))
+		print('Elapsed time: {0}'.format(apt_pkg.time_to_str(int(time_end - time_start))))
+		print('Overall speed: {0}B/s'.format(apt_pkg.size_to_str(self.cache.required_download / (time_end - time_start))))
 		# Link archives/partial/*.deb to archives/
 		for pkg in pkgs:
 			filename = get_filename(pkg.candidate)
@@ -171,9 +175,9 @@ class AptMetalink:
 				# partial directory to know download is complete
 				# in the next invocation.
 				os.rename(src, dst)
-			except OSError, e:
+			except OSError as e:
 				if e.errno != errno.ENOENT:
-					print "Failed to move archive file", e
+					print("Failed to move archive file", e)
 				link_success = False
 		return proc.returncode == 0 and link_success
 
@@ -187,9 +191,9 @@ class AptMetalink:
 			hash_type, hash_value = get_hash(pkg.candidate)
 			try:
 				return check_hash(path, hash_type, hash_value)
-			except IOError, e:
+			except IOError as e:
 				if e.errno != errno.ENOENT:
-					print "Failed to check hash", e
+					print("Failed to check hash", e)
 				return False
 		else:
 			return True
@@ -272,13 +276,13 @@ def guess_concurrent(pkgs):
 
 def pprint_names(msg, names):
 	if names:
-		print msg
-		print textwrap.fill(' '.join(names),
+		print(msg)
+		print(textwrap.fill(' '.join(names),
 							width=78,
 							initial_indent='  ',
 							subsequent_indent='  ',
 							break_long_words=False,
-							break_on_hyphens=False)
+							break_on_hyphens=False))
 
 def _print_update_summary(cache, pkgs):
 	delete_names = []
@@ -295,18 +299,18 @@ def _print_update_summary(cache, pkgs):
 	pprint_names('The following packages will be REMOVED:', delete_names)
 	pprint_names('The following NEW packages will be installed:', install_names)
 	pprint_names('The following packages will be upgraded:', upgrade_names)
-	print ('{0} upgraded, {1} newly installed, {2} to remove and'
+	print(('{0} upgraded, {1} newly installed, {2} to remove and'
 		   ' {3} not upgraded')\
 		   .format(len(upgrade_names), len(install_names), len(delete_names),
-				   cache.keep_count)
-	print 'Need to get {0}B of archives.'\
-		.format(apt_pkg.size_to_str(cache.required_download))
+				   cache.keep_count))
+	print('Need to get {0}B of archives.'\
+		.format(apt_pkg.size_to_str(cache.required_download)))
 	if cache.required_space < 0:
-		print 'After this operation, {0}B of disk space will be freed.'\
-			.format(apt_pkg.size_to_str(-cache.required_space))
+		print('After this operation, {0}B of disk space will be freed.'\
+			.format(apt_pkg.size_to_str(-cache.required_space)))
 	else:
-		print ('After this operation, {0}B of additional disk space will'
-			   ' be used.').format(apt_pkg.size_to_str(cache.required_space))
+		print(('After this operation, {0}B of additional disk space will'
+			   ' be used.').format(apt_pkg.size_to_str(cache.required_space)))
 
 def main():
 	usage = 'Usage: %prog [options] {help | upgrade | dist-upgrade | install pkg ...}'
@@ -339,14 +343,14 @@ FILE. Metalink XML document contains package's URIs and checksums.
 	(opts, args) = parser.parse_args()
 
 	if not args:
-		print 'No command is given.'
+		print('No command is given.')
 		parser.print_help()
 		exit(1)
 
 	command = args[0]
 
 	if command != 'install' and len(args) > 1:
-		print 'Invalid args.' ', '.join(args)
+		print('Invalid args.' ', '.join(args))
 		parser.print_help()
 		exit(1)
 
@@ -362,7 +366,7 @@ FILE. Metalink XML document contains package's URIs and checksums.
 	elif command == 'install':
 		am.install(args[1:])
 	else:
-		print "Command {0} is not supported.".format(command)
+		print("Command {0} is not supported.".format(command))
 		exit(1)
 
 if __name__ == '__main__':
