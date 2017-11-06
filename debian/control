@@ -4,11 +4,14 @@ Priority: optional
 Maintainer: Jordi Pujol Palomer <jordipujolp@gmail.com>
 Homepage: http://livenet.ddns.net/
 Standards-Version: 3.7.3
-Build-Depends: debhelper (>= 5.0), dh-python, python-apt, docbook-to-man
+Build-Depends: debhelper (>= 5.0), dh-python,
+ python | python3, python-apt | python3-apt,
+ docbook-to-man,
 
 Package: apt-metalink
 Architecture: all
-Depends: ${shlibs:Depends}, aria2, gzip, bzip2, xz-utils, python, python-apt
+Depends: aria2, gzip, bzip2, xz-utils,
+ python | python3, python-apt | python3-apt,
 Description: apt-get like utility to update Debian with apt-pkg and
  aria2 downloader.
  This package contains the apt-metalink utility.
