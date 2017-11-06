@@ -1,3 +1,9 @@
+apt-metalink (0.9) unstable; urgency=medium
+
+  * prepare the code to be executed by any of python2 or python3.
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Sat, 04 Nov 2017 16:05:17 +0100
+
 apt-metalink (0.8) unstable; urgency=medium
 
   * exit with error when download is not successful
