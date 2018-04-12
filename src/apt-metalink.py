@@ -209,13 +209,14 @@ def check_hash(path, hash_type, hash_value):
 	return hash_fun.hexdigest() == hash_value
 
 def get_hash(candidate):
-	if candidate.sha256:
-		return ("sha256", candidate.sha256)
-	elif candidate.sha1:
-		return ("sha1", candidate.sha1)
-	elif candidate.md5:
-		return ("md5", candidate.md5)
-	else:
+	try:
+		if candidate.sha256:
+			return ("sha256", candidate.sha256)
+		elif candidate.sha1:
+			return ("sha1", candidate.sha1)
+		elif candidate.md5:
+			return ("md5", candidate.md5)
+	except SystemError:
 		return (None, None)
 
 def get_filename(candidate):
