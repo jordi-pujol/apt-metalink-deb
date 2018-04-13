@@ -1,4 +1,10 @@
 #!/bin/sh
 
-exec "$(which python3 || which python2)" \
-	"/usr/bin/apt-metalink.py" "${@}"
+set -o errexit
+
+[ -n "$(dpkg-query -W --showformat='${Version}' "python3-apt" 2> /dev/null)" ] && \
+	python="$(which python3)" || \
+	python="$(which python2)" || \
+	exit 1
+
+exec "${python}" "/usr/bin/apt-metalink.py" "${@}"
