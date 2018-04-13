@@ -6,8 +6,10 @@ _apt_metalink()
 	_init_completion || return
 
 	local GENERIC_APT_METALINK_OPTIONS='
+		-o
+		-f --fix-broken
 		-d --download-only
-		-y --assume-yes
+		-y --yes --assume-yes
 		--metalink-out
 		--hash-check
 		-x --aria2c
@@ -18,11 +20,15 @@ _apt_metalink()
 			_filedir
 			return 0
 			;;
+		-o)
+			return 0
+			;;
 	esac
 
 	# see if the user selected a command already
 	local COMMANDS=(
 		"install"
+		"update"
 		"upgrade" "full-upgrade" "dist-upgrade"
 		"help" )
 
