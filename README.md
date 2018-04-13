@@ -7,8 +7,9 @@ This work is based on the apt-metalink utility from:
 https://github.com/tatsuhiro-t/apt-metalink
 
 It is enhanced in some points, the configuration is more easy, some 
-bugs are solved, now works with any python version, and all that is 
-included in a Debian package to easy install.
+bugs are solved, now works with any python version, apt config options 
+may be specified, and all that is included in a Debian package to easy 
+install.
 
 For an overview of the Aria2 utility, see the 'aria2' package, or
 go to the homepage: http://aria2.sourceforge.net/
@@ -48,5 +49,17 @@ sometimes slightly faster, but not too much.
 We can look for some URLs of web pages that list Debian mirrors: 
 
 http://www.debian.org/mirror/list-full
+
 http://deb-multimedia.org/debian-m-testing.php
+
 http://sidux.com/module-Content-view-pid-2.html
+
+# Execution examples:
+
+Upgrade in silent mode, replace configurations without any question.
+
+apt-metalink -y -o Dpkg::Options::="--force-confnew" -o APT::Quiet="true" upgrade
+
+Download upgradable packages.
+
+apt-metalink -y --download-only dist-upgrade
