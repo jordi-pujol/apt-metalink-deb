@@ -1,3 +1,18 @@
+apt-metalink (1.1) unstable; urgency=medium
+
+  * Dont check hash of the candidate package when hash_check option is
+    not set.
+  * Prevent SystemError and UnicodeDecodeError when verifying a candidate
+    package hash.
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Thu, 12 Apr 2018 10:17:12 +0200
+
+apt-metalink (1.0) unstable; urgency=medium
+
+  * parse apt configuration options
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Mon, 06 Nov 2017 10:26:07 +0100
+
 apt-metalink (0.9) unstable; urgency=medium
 
   * prepare the code to be executed by any of python2 or python3.
