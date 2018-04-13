@@ -2,7 +2,7 @@
 #
 # apt-metalink - Download deb packages from multiple servers concurrently
 # Copyright (C) 2010-2014 Tatsuhiro Tsujikawa
-# Copyright (C) 2014-2017 Jordi Pujol
+# Copyright (C) 2014-2018 Jordi Pujol
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,12 +52,27 @@ class AptMetalink:
 		if not self.archive_dir:
 			raise Exception(('No package lists dir is set.'
 							' Usually it is /var/lib/apt/lists/'))
+		for c in self.opts.aptconf:
+			(cname, copt) = c.split("=", 1)
+			apt_pkg.config.set(cname, copt)
+
+	def update(self):
+		self.cache.update()
+		self._get_changes()
 
 	def upgrade(self, dist_upgrade=False):
 		self.cache.upgrade(dist_upgrade=dist_upgrade)
 		self._get_changes()
 
 	def install(self, pkg_names):
+		if self.opts.fix_broken:
+			depcache = apt_pkg.DepCache(apt_pkg.Cache(apt.progress.text.OpProgress()))
+			depcache.read_pinfile()
+			try:
+				depcache.fix_broken()
+			except OSError as e:
+				print("apt can't fix this broken installation.")
+				exit(1)
 		for pkg_name in pkg_names:
 			if pkg_name in self.cache:
 				pkg = self.cache[pkg_name]
@@ -88,7 +103,7 @@ class AptMetalink:
 								self.opts.hash_check)]
 				if self.opts.metalink_out:
 					with open(self.opts.metalink_out, 'w') as f:
-						make_metalink(f, pkgs)
+						make_metalink(f, pkgs, self.opts.hash_check)
 					return
 				if not self._download(pkgs, num_concurrent=guess_concurrent(pkgs)):
 					print("Some download fails. apt_pkg will take care of them.")
@@ -142,7 +157,7 @@ class AptMetalink:
 								stderr=subprocess.STDOUT,
 								env={"LANGUAGE": "en_US"},
 								universal_newlines=True)
-		make_metalink(proc.stdin, pkgs)
+		make_metalink(proc.stdin, pkgs, self.opts.hash_check)
 		proc.stdin.close()
 		download_results = False
 		while True:
@@ -216,8 +231,9 @@ def get_hash(candidate):
 			return ("sha1", candidate.sha1)
 		elif candidate.md5:
 			return ("md5", candidate.md5)
-	except SystemError:
-		return (None, None)
+	except (SystemError, UnicodeDecodeError):
+		pass
+	return (None, None)
 
 def get_filename(candidate):
 	# TODO apt-get man page said filename and basename in URI
@@ -235,17 +251,18 @@ def get_mirrors():
 	return list()
 
 # install, update and upgrade. To download deb package files
-def make_metalink(out, pkgs):
+def make_metalink(out, pkgs, hash_check):
 	mList = get_mirrors()
 	out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
 	out.write('<metalink xmlns="urn:ietf:params:xml:ns:metalink">\n')
 	for pkg in pkgs:
 		candidate = pkg.candidate
-		hashtype, hashvalue = get_hash(candidate)
 		out.write('<file name="{0}">\n'.format(get_filename(candidate)))
 		out.write('<size>{0}</size>\n'.format(candidate.size))
-		if hashtype:
-			out.write('<hash type="{0}">{1}</hash>\n'.format(hashtype, hashvalue))
+		if hash_check:
+			hashtype, hashvalue = get_hash(candidate)
+			if hashtype:
+				out.write('<hash type="{0}">{1}</hash>\n'.format(hashtype, hashvalue))
 		uris = []
 		for uri in set(candidate.uris):
 			uris.append('<url priority="{0}">{1}</url>\n'.format(5, uri))
@@ -328,8 +345,12 @@ FILE. Metalink XML document contains package's URIs and checksums.
 							" If hash check fails, download file again."))
 	parser.add_option('-x', '--aria2c' ,dest='aria2c',
 					  help="path to aria2c executable [default: %default]")
-	parser.add_option('-y', '--assume-yes', action='store_true',
+	parser.add_option('-y', '--assume-yes', '--yes', action='store_true',
 					  help="Assume Yes to all queries and do not prompt. [default: %default]")
+	parser.add_option('-o', dest='aptconf', action='append',
+					  help="Apt configuration options")
+	parser.add_option('-f', '--fix-broken', action="store_true",
+					  help=("Try to fix all broken packages in the cache and return True in case of success."))
 
 	if apt_pkg.config.find('APT::Get::Download-Only') in ["1", "true"]:
 		parser.set_defaults(download_only=True)
@@ -341,6 +362,8 @@ FILE. Metalink XML document contains package's URIs and checksums.
 		parser.set_defaults(assume_yes=True)
 	else:
 		parser.set_defaults(assume_yes=False)
+	parser.set_defaults(aptconf=[])
+	parser.set_defaults(fix_broken=False)
 	(opts, args) = parser.parse_args()
 
 	if not args:
@@ -360,15 +383,21 @@ FILE. Metalink XML document contains package's URIs and checksums.
 		exit(0)
 
 	am = AptMetalink(opts)
-	if command == 'upgrade':
-		am.upgrade()
-	elif command in ['dist-upgrade', 'full-upgrade']:
-		am.upgrade(dist_upgrade=True)
-	elif command == 'install':
+	if command == 'install':
 		am.install(args[1:])
-	else:
-		print("Command {0} is not supported.".format(command))
+	elif opts.fix_broken:
+		sys.stderr.write("Option fix-broken is only valid for the install command.\n")
 		exit(1)
+	else:
+		if command == 'upgrade':
+			am.upgrade()
+		elif command in ['dist-upgrade', 'full-upgrade']:
+			am.upgrade(dist_upgrade=True)
+		elif command == 'update':
+			am.update()
+		else:
+			sys.stderr.write("Command {0} is not supported.\n".format(command))
+			exit(1)
 
 if __name__ == '__main__':
 	main()
