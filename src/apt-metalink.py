@@ -2,7 +2,7 @@
 #
 # apt-metalink - Download deb packages from multiple servers concurrently
 # Copyright (C) 2010-2014 Tatsuhiro Tsujikawa
-# Copyright (C) 2014-2018 Jordi Pujol
+# Copyright (C) 2014-2019 Jordi Pujol
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
