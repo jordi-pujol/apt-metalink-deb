@@ -178,9 +178,9 @@ class AptMetalink:
 				downloading=l[l.index('Downloading')+1]
 			elif 'Download complete:' in line:
 				l=line.split()
-				downloaded=downloaded+1
+				downloaded+=1
 				print('{0}/{1} {2}'.format(downloaded, downloading, \
-					l[l.index('complete:')+1]).replace(partial_dir + "/", ''))
+					l[l.index('complete:')+1].replace(partial_dir + "/", '')))
 		print()
 		link_success = True
 		time_end = time.time()
