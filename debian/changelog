@@ -1,3 +1,10 @@
+apt-metalink (1.2) UNRELEASED; urgency=medium
+
+  * show download progress:
+    count and list names of completed items.
+
+ -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Thu, 24 Jan 2019 10:42:59 +0100
+
 apt-metalink (1.1) unstable; urgency=medium
 
   * Dont check hash of the candidate package when hash_check option is
