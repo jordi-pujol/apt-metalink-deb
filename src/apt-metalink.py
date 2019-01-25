@@ -160,8 +160,8 @@ class AptMetalink:
 		make_metalink(proc.stdin, pkgs, self.opts.hash_check)
 		proc.stdin.close()
 		download_results = False
-		downloading=0
-		downloaded=0
+		downloading = 0
+		downloaded = 0
 		while True:
 			line = proc.stdout.readline()
 			if line == '' and proc.poll() != None:
@@ -176,13 +176,13 @@ class AptMetalink:
 				if 'Download complete' in line:
 					break
 			elif 'Downloading ' in line and ' item(s)' in line:
-				l=line.split()
-				i=l.index('Downloading')
-				downloading=l[i+1]
+				l = line.split()
+				i = l.index('Downloading')
+				downloading = l[i+1]
 				print('{0} {1} {2}'.format(l[i], downloading, l[i+2]))
 			elif 'Download complete:' in line:
-				l=line.split()
-				downloaded+=1
+				l = line.split()
+				downloaded += 1
 				print('{0}/{1} {2}'.format(downloaded, downloading, \
 					l[l.index('complete:')+1].replace(partial_dir + "/", '')))
 		print()
