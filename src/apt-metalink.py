@@ -168,7 +168,7 @@ class AptMetalink:
 				break
 			line = line.strip()
 			if line == '':
-				pass
+				continue
 			if line.startswith('Download Results:'):
 				download_results = True
 			if download_results:
