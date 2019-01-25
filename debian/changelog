@@ -1,4 +1,4 @@
-apt-metalink (1.2) UNRELEASED; urgency=medium
+apt-metalink (1.2) unstable; urgency=medium
 
   * show download progress:
     count and list names of completed items.

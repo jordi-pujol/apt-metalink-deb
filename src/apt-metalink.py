@@ -169,13 +169,17 @@ class AptMetalink:
 			line = line.strip()
 			if line.startswith('Download Results:'):
 				download_results = True
-			if download_results and not line == '':
+			if line == '':
+				pass
+			elif download_results:
 				print(line.replace(partial_dir + "/", ''))
 				if 'Download complete' in line:
 					break
 			elif 'Downloading ' in line and ' item(s)' in line:
 				l=line.split()
-				downloading=l[l.index('Downloading')+1]
+				i=l.index('Downloading')
+				downloading=l[i+1]
+				print('{0} {1} {2}'.format(l[i], downloading, l[i+2]))
 			elif 'Download complete:' in line:
 				l=line.split()
 				downloaded+=1
