@@ -167,11 +167,11 @@ class AptMetalink:
 			if line == '' and proc.poll() != None:
 				break
 			line = line.strip()
-			if line.startswith('Download Results:'):
-				download_results = True
 			if line == '':
 				pass
-			elif download_results:
+			if line.startswith('Download Results:'):
+				download_results = True
+			if download_results:
 				print(line.replace(partial_dir + "/", ''))
 				if 'Download complete' in line:
 					break
