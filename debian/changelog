@@ -2,6 +2,8 @@ apt-metalink (1.2) unstable; urgency=medium
 
   * show download progress:
     count and list names of completed items.
+  * Bug correction:
+    Remove file debian/links, it's not used.
 
  -- Jordi Pujol Palomer <jordipujolp@gmail.com>  Thu, 24 Jan 2019 10:42:59 +0100
 
