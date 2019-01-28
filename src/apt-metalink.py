@@ -176,15 +176,17 @@ class AptMetalink:
 				if 'Download complete' in line:
 					break
 			elif 'Downloading ' in line and ' item(s)' in line:
-				l = line.split()
-				i = l.index('Downloading')
-				downloading = l[i+1]
-				print('{0} {1} {2}'.format(l[i], downloading, l[i+2]))
+				if self.opts.verbose:
+					l = line.split()
+					i = l.index('Downloading')
+					downloading = l[i+1]
+					print('{0} {1} {2}'.format(l[i], downloading, l[i+2]))
 			elif 'Download complete:' in line:
-				l = line.split()
-				downloaded += 1
-				print('{0}/{1} {2}'.format(downloaded, downloading, \
-					l[l.index('complete:')+1].replace(partial_dir + "/", '')))
+				if self.opts.verbose:
+					l = line.split()
+					downloaded += 1
+					print('{0}/{1} {2}'.format(downloaded, downloading, \
+						l[l.index('complete:')+1].replace(partial_dir + "/", '')))
 		print()
 		link_success = True
 		time_end = time.time()
@@ -357,8 +359,10 @@ FILE. Metalink XML document contains package's URIs and checksums.
 	parser.add_option('-c', '--hash-check', action="store_true",
 					  help=("Check hash of already downloaded files."
 							" If hash check fails, download file again."))
-	parser.add_option('-x', '--aria2c' ,dest='aria2c',
+	parser.add_option('-x', '--aria2c', dest='aria2c',
 					  help="path to aria2c executable [default: %default]")
+	parser.add_option('-v', '--verbose' , action="store_true",
+					  help="Print messages about what the program is doing.")
 	parser.add_option('-y', '--assume-yes', '--yes', action='store_true',
 					  help="Assume Yes to all queries and do not prompt. [default: %default]")
 	parser.add_option('-o', dest='aptconf', action='append',
@@ -372,6 +376,7 @@ FILE. Metalink XML document contains package's URIs and checksums.
 		parser.set_defaults(download_only=False)
 	parser.set_defaults(hash_check=False)
 	parser.set_defaults(aria2c='/usr/bin/aria2c')
+	parser.set_defaults(verbose=False)
 	if apt_pkg.config.find('APT::Get::Assume-Yes') in ["1", "true"]:
 		parser.set_defaults(assume_yes=True)
 	else:

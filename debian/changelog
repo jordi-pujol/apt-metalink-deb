@@ -1,6 +1,8 @@
 apt-metalink (1.2) unstable; urgency=medium
 
-  * show download progress:
+  * New option: -v --verbose
+    Print messages about what the program is doing.
+  * verbose option will show download progress:
     count and list names of completed items.
   * Bug correction:
     Remove file debian/links, it's not used.
