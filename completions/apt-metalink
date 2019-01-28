@@ -12,6 +12,7 @@ _apt_metalink()
 		-y --yes --assume-yes
 		--metalink-out
 		--hash-check
+		--verbose
 		-x --aria2c
 	'
 
