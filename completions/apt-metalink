@@ -10,14 +10,15 @@ _apt_metalink()
 		-f --fix-broken
 		-d --download-only
 		-y --yes --assume-yes
-		--metalink-out
-		--hash-check
+		-m --metalink-out
+		-c --hash-check
 		-v --verbose
 		-x --aria2c
+		--help
 	'
 
 	case $prev in
-		--metalink-out|-x|--aria2c)
+		-m|--metalink-out|-x|--aria2c)
 			_filedir
 			return 0
 			;;
