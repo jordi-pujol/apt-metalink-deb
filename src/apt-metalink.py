@@ -357,18 +357,18 @@ Instead of fetching the files, Metalink XML document is saved to given
 FILE. Metalink XML document contains package's URIs and checksums.
 """))
 	parser.add_option('-c', '--hash-check', action="store_true",
-					  help=("Check hash of already downloaded files."
+					  help=("Check hash of already downloaded files. [default: %default]"
 							" If hash check fails, download file again."))
 	parser.add_option('-x', '--aria2c', dest='aria2c',
 					  help="path to aria2c executable [default: %default]")
 	parser.add_option('-v', '--verbose' , action="store_true",
-					  help="Print messages about what the program is doing.")
+					  help="Print messages about what the program is doing. [default: %default]")
 	parser.add_option('-y', '--assume-yes', '--yes', action='store_true',
 					  help="Assume Yes to all queries and do not prompt. [default: %default]")
 	parser.add_option('-o', dest='aptconf', action='append',
 					  help="Apt configuration options")
 	parser.add_option('-f', '--fix-broken', action="store_true",
-					  help=("Try to fix all broken packages in the cache and return True in case of success."))
+					  help=("Try to fix all broken packages in the cache and return True in case of success. [default: %default]"))
 
 	if apt_pkg.config.find('APT::Get::Download-Only') in ["1", "true"]:
 		parser.set_defaults(download_only=True)
