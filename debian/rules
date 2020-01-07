@@ -33,4 +33,4 @@ override_dh_auto_build: apt-metalink.1
 	/usr/bin/docbook-to-man $< > man/$@
 
 override_dh_auto_clean:
-	rm -f src/apt-metalink.pyo man/apt-metalink.1
+	rm -rf src/apt-metalink.pyo src/__pycache__ man/apt-metalink.1
