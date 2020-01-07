@@ -160,6 +160,8 @@ class AptMetalink:
 		make_metalink(proc.stdin, pkgs, self.opts.hash_check)
 		proc.stdin.close()
 		download_results = False
+		download_items = False
+		download_list = list()
 		downloading = 0
 		downloaded = 0
 		while True:
@@ -172,7 +174,15 @@ class AptMetalink:
 			if line.startswith('Download Results:'):
 				download_results = True
 			if download_results:
-				print(line.replace(partial_dir + "/", ''))
+				if partial_dir in line:
+					download_items = True
+					download_list.append(line.replace(partial_dir + "/", ''))
+				else:
+					if download_items:
+						download_items = False
+						download_list.sort(key = sort_filename)
+						print(*download_list, sep = "\n")
+					print(line)
 				if 'Download complete' in line:
 					break
 			elif 'Downloading ' in line and ' item(s)' in line:
@@ -251,6 +261,10 @@ def get_hash(candidate):
 		pass
 	return (None, None)
 
+def sort_filename(v):
+	a = v.split("|")
+	return a[1] + "|" + a[4]
+ 
 def get_filename(candidate):
 	# TODO apt-get man page said filename and basename in URI
 	# could be different.
