@@ -192,8 +192,8 @@ class AptMetalink:
 			loop=0
 			if line.startswith('Download Results:'):
 				download_results = True
-			if download_results:
 				maxloop=2
+			if download_results:
 				if partial_dir in line:
 					download_items = True
 					download_list.append(line.replace(partial_dir + "/", ''))
@@ -205,7 +205,7 @@ class AptMetalink:
 						download_list.sort(key = sort_filename)
 						print(*download_list, sep = "\n")
 					print(line)
-				if 'ownload complete' in line:
+				if 'download complete' in line:
 					break
 			elif 'Downloading ' in line and ' item(s)' in line:
 				l = line.split()
