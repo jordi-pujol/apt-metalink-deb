@@ -34,6 +34,10 @@ import time
 import re
 import glob
 
+from time import sleep
+from fcntl import fcntl, F_GETFL, F_SETFL
+from os import O_NONBLOCK, read
+
 import apt
 import apt_pkg
 
@@ -105,7 +109,7 @@ class AptMetalink:
 					with open(self.opts.metalink_out, 'w') as f:
 						make_metalink(f, pkgs, self.opts.hash_check)
 					return
-				if not self._download(pkgs, num_concurrent=guess_concurrent(pkgs)):
+				if not self._download(pkgs):
 					print("Some download fails. apt_pkg will take care of them.")
 					exit(1)
 			else:
@@ -154,47 +158,66 @@ class AptMetalink:
 		proc = subprocess.Popen(cmdline,
 								stdin=subprocess.PIPE,
 								stdout=subprocess.PIPE,
-								stderr=subprocess.STDOUT,
+								stderr=subprocess.PIPE,
 								env={"LANGUAGE": "en_US"},
+								bufsize=1,
 								universal_newlines=True)
+		flags = fcntl(proc.stdout, F_GETFL)
+		fcntl(proc.stdout, F_SETFL, flags | O_NONBLOCK)
 		make_metalink(proc.stdin, pkgs, self.opts.hash_check)
 		proc.stdin.close()
 		download_results = False
 		download_items = False
 		download_list = list()
 		downloading = 0
-		downloaded = 0
+		downloaded = -1
+		loop=0
+		maxloop=60
 		while True:
-			line = proc.stdout.readline()
-			if line == '' and proc.poll() != None:
+			try:
+				line = proc.stdout.readline()
+			except OSError:
+				proc.kill()
+				break
+			if line == None and proc.poll() != None:
 				break
 			line = line.strip()
 			if line == '':
+				loop+=1
+				if loop >= maxloop:
+					proc.kill()
+					break
+				sleep(1)
 				continue
+			loop=0
 			if line.startswith('Download Results:'):
 				download_results = True
 			if download_results:
+				maxloop=2
 				if partial_dir in line:
 					download_items = True
 					download_list.append(line.replace(partial_dir + "/", ''))
+					if 'ERR' in line:
+						downloaded -= 1
 				else:
 					if download_items:
 						download_items = False
 						download_list.sort(key = sort_filename)
 						print(*download_list, sep = "\n")
 					print(line)
-				if 'Download complete' in line:
+				if 'ownload complete' in line:
 					break
 			elif 'Downloading ' in line and ' item(s)' in line:
+				l = line.split()
+				i = l.index('Downloading')
+				downloading = int(l[i+1])
+				downloaded = 0
 				if self.opts.verbose:
-					l = line.split()
-					i = l.index('Downloading')
-					downloading = l[i+1]
 					print('{0} {1} {2}'.format(l[i], downloading, l[i+2]))
 			elif 'Download complete:' in line:
+				downloaded += 1
 				if self.opts.verbose:
 					l = line.split()
-					downloaded += 1
 					print('{0}/{1} {2}'.format(downloaded, downloading, \
 						l[l.index('complete:')+1].replace(partial_dir + "/", '')))
 		print()
@@ -220,7 +243,8 @@ class AptMetalink:
 				if e.errno != errno.ENOENT:
 					print("Failed to move archive file", e)
 				link_success = False
-		return proc.returncode == 0 and link_success
+				downloaded -= 1
+		return link_success and downloading == downloaded
 
 	def _file_downloaded(self, pkg, hash_check=False):
 		candidate = pkg.candidate
@@ -318,9 +342,6 @@ def make_metalink(out, pkgs, hash_check):
 			out.write(uri)
 		out.write('</file>\n')
 	out.write('</metalink>\n')
-
-def guess_concurrent(pkgs):
-	return 3
 
 def pprint_names(msg, names):
 	if names:
