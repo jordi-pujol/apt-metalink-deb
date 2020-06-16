@@ -172,7 +172,7 @@ class AptMetalink:
 		downloading = 0
 		downloaded = -1
 		loop=0
-		maxloop=60
+		maxloop = 60
 		while True:
 			try:
 				line = proc.stdout.readline()
@@ -183,7 +183,7 @@ class AptMetalink:
 				break
 			line = line.strip()
 			if line == '':
-				loop+=1
+				loop += 1
 				if loop >= maxloop:
 					proc.kill()
 					break
@@ -192,7 +192,7 @@ class AptMetalink:
 			loop=0
 			if line.startswith('Download Results:'):
 				download_results = True
-				maxloop=2
+				maxloop = 2
 			if download_results:
 				if partial_dir in line:
 					download_items = True
@@ -205,7 +205,7 @@ class AptMetalink:
 						download_list.sort(key = sort_filename)
 						print(*download_list, sep = "\n")
 					print(line)
-				if 'download complete' in line:
+				if 'ownload complete' in line:
 					break
 			elif 'Downloading ' in line and ' item(s)' in line:
 				l = line.split()
@@ -222,9 +222,9 @@ class AptMetalink:
 						l[l.index('complete:')+1].replace(partial_dir + "/", '')))
 		print()
 		link_success = True
-		time_end = time.time()
-		print('Elapsed time: {0}'.format(apt_pkg.time_to_str(int(time_end - time_start))))
-		print('Overall speed: {0}B/s'.format(apt_pkg.size_to_str(self.cache.required_download / (time_end - time_start))))
+		time_e = int(time.time() - time_start)
+		print('Elapsed time: {0}'.format(apt_pkg.time_to_str(time_e)))
+		print('Overall speed: {0}B/s'.format(apt_pkg.size_to_str(self.cache.required_download / time_e)))
 		# Link archives/partial/*.deb to archives/
 		for pkg in pkgs:
 			filename = get_filename(pkg.candidate)
